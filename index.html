@@ -121,7 +121,7 @@
 
     #audioPlayer {
       position: fixed;
-      bottom: 20px;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
       width: 95%;
@@ -147,120 +147,6 @@
         max-width: 280px;
       }
     }
-
-    /* Estilos específicos para móviles */
-    .mobile-controls {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-      z-index: 10;
-      background-color: rgba(20, 20, 20, 0.8);
-      border-radius: 12px;
-      padding: 10px;
-      border: 1px solid rgba(255, 0, 0, 0.5);
-      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-    }
-
-    @media (min-width: 1024px) {
-      .mobile-controls {
-        display: none;
-      }
-    }
-
-    .mobile-controls button {
-      padding: 10px 15px;
-      background: rgba(255, 0, 0, 0.3);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
-    }
-
-    .mobile-controls button:active {
-      background: rgba(255, 0, 0, 0.5);
-    }
-
-    /* Estilos específicos para PC */
-    @media (min-width: 1024px) {
-      .scene {
-        width: 60vmin;
-        height: 60vmin;
-        perspective: 1200px;
-      }
-
-      .cube {
-        transform: scale(0.8) rotateX(-15deg) rotateY(15deg);
-      }
-
-      .front, .back, .right, .left, .top, .bottom {
-        transform: translateZ(30vmin);
-      }
-
-      .front  { transform: translateZ(30vmin); }
-      .back   { transform: rotateY(180deg) translateZ(30vmin); }
-      .right  { transform: rotateY(90deg) translateZ(30vmin); }
-      .left   { transform: rotateY(-90deg) translateZ(30vmin); }
-      .top    { transform: rotateX(90deg) translateZ(30vmin); }
-      .bottom { transform: rotateX(-90deg) translateZ(30vmin); }
-
-      #audioPlayer {
-        max-width: 400px;
-        bottom: 30px;
-      }
-
-      .rain-symbol {
-        font-size: 24px;
-      }
-    }
-
-    /* Controles para PC */
-    .controls-panel {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: rgba(20, 20, 20, 0.8);
-      border-radius: 12px;
-      padding: 15px;
-      border: 1px solid rgba(255, 0, 0, 0.5);
-      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-      z-index: 10;
-      display: none;
-    }
-
-    @media (min-width: 1024px) {
-      .controls-panel {
-        display: block;
-      }
-    }
-
-    .controls-panel h3 {
-      color: white;
-      margin-bottom: 10px;
-      font-size: 16px;
-      text-align: center;
-    }
-
-    .controls-panel button {
-      display: block;
-      width: 100%;
-      padding: 8px 12px;
-      margin: 5px 0;
-      background: rgba(255, 0, 0, 0.3);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .controls-panel button:hover {
-      background: rgba(255, 0, 0, 0.5);
-    }
   </style>
 </head>
 <body>
@@ -276,38 +162,17 @@
     </div>
   </div>
 
-  <!-- Controles para móviles -->
-  <div class="mobile-controls">
-    <button id="mobileBounceBtn">Rebotar</button>
-    <button id="mobileResetBtn">Resetear</button>
-    <button id="mobileRotateBtn">Rotar</button>
-  </div>
-
-  <div class="controls-panel">
-    <h3>Controles</h3>
-    <button id="bounceBtn">Activar Rebote (Doble Click)</button>
-    <button id="resetBtn">Resetear Posición</button>
-    <button id="rotateBtn">Rotación Automática</button>
-  </div>
-
   <audio id="audioPlayer" controls loop>
     <source src="assets/musica_fondo.mp3" type="audio/mpeg">
     Tu navegador no soporta el elemento de audio.
   </audio>
 
   <script>
-    // Detección de dispositivo
+    // Detección de móvil
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const isPC = !isMobile;
     const cube = document.getElementById('cube');
     const scene = document.querySelector('.scene');
     const audio = document.getElementById('audioPlayer');
-    const bounceBtn = document.getElementById('bounceBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const rotateBtn = document.getElementById('rotateBtn');
-    const mobileBounceBtn = document.getElementById('mobileBounceBtn');
-    const mobileResetBtn = document.getElementById('mobileResetBtn');
-    const mobileRotateBtn = document.getElementById('mobileRotateBtn');
     const symbols = ["love", "❤️", "i love you", "❤️"];
 
     // Configuración inicial
@@ -318,16 +183,14 @@
     let lastTapTime = 0;
     let isBouncing = false;
     let bounceAnimationId = null;
-    let autoRotateId = null;
-    let isAutoRotating = false;
 
     function updateRotation() {
-      cube.style.transform = `scale(${isPC ? 0.8 : 0.65}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      cube.style.transform = `scale(0.65) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     }
 
-    // Control para dispositivos táctiles
+    // Control táctil para móviles
     function handleStart(x, y) {
-      if (isBouncing || isAutoRotating) return;
+      if (isBouncing) return;
       
       isDragging = true;
       startX = x;
@@ -337,9 +200,9 @@
     }
 
     function handleMove(x, y) {
-      if (!isDragging || isBouncing || isAutoRotating) return;
+      if (!isDragging || isBouncing) return;
       
-      const sensitivity = isPC ? 0.5 : 0.8;
+      const sensitivity = 0.8;
       rotateY += (x - startX) * sensitivity;
       rotateX -= (y - startY) * sensitivity;
       
@@ -350,59 +213,45 @@
 
     function handleEnd() {
       isDragging = false;
-      if (!isBouncing && !isAutoRotating) {
+      if (!isBouncing) {
         cube.style.transition = 'transform 0.1s linear';
         scene.style.transition = 'all 0.1s linear';
       }
     }
 
-    // Eventos táctiles para móviles
+    // Eventos táctiles
     document.addEventListener('touchstart', e => {
-      if (e.target.closest('.mobile-controls')) return;
       e.preventDefault();
       handleStart(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: false });
     
     document.addEventListener('touchmove', e => {
-      if (e.target.closest('.mobile-controls')) return;
       e.preventDefault();
       handleMove(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: false });
     
     document.addEventListener('touchend', e => {
-      if (e.target.closest('.mobile-controls')) return;
       e.preventDefault();
       handleEnd();
     });
 
-    // Eventos de ratón para PC
-    if (isPC) {
-      document.addEventListener('mousedown', e => {
-        if (e.target.closest('.controls-panel')) return;
-        handleStart(e.clientX, e.clientY);
-      });
-      
-      document.addEventListener('mousemove', e => {
-        handleMove(e.clientX, e.clientY);
-      });
-      
-      document.addEventListener('mouseup', e => {
-        handleEnd();
-      });
+    // También soporte para ratón
+    document.addEventListener('mousedown', e => {
+      e.preventDefault();
+      handleStart(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mousemove', e => {
+      e.preventDefault();
+      handleMove(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mouseup', e => {
+      e.preventDefault();
+      handleEnd();
+    });
 
-      // Rueda del ratón para zoom
-      document.addEventListener('wheel', e => {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.05 : 0.05;
-        const currentScale = parseFloat(cube.style.transform.match(/scale\(([^)]+)\)/)[1]) || (isPC ? 0.8 : 0.65);
-        const newScale = Math.min(Math.max(currentScale + delta, 0.4), 1.2);
-        
-        cube.style.transition = 'transform 0.2s ease-out';
-        cube.style.transform = `scale(${newScale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      }, { passive: false });
-    }
-
-    // Efecto de lluvia optimizado
+    // Efecto de lluvia optimizado para móviles
     function crearSimbolo() {
       const el = document.createElement('div');
       el.className = 'rain-symbol';
@@ -421,7 +270,7 @@
 
     function iniciarLluvia() {
       clearInterval(lluviaInterval);
-      lluviaInterval = setInterval(crearSimbolo, isPC ? 300 : 400);
+      lluviaInterval = setInterval(crearSimbolo, 400);
     }
 
     function detenerLluvia() {
@@ -434,11 +283,6 @@
       if (isBouncing) {
         resetPosition();
         return;
-      }
-      
-      // Detener rotación automática si está activa
-      if (isAutoRotating) {
-        toggleAutoRotate();
       }
       
       isBouncing = true;
@@ -454,7 +298,7 @@
       let posY = window.innerHeight / 2;
       let velX = (Math.random() - 0.5) * 15;
       let velY = -12 - Math.random() * 5;
-      let scale = isPC ? 0.8 : 0.65;
+      let scale = 0.65;
       
       const sceneRect = scene.getBoundingClientRect();
       const cubeSize = sceneRect.width;
@@ -498,10 +342,10 @@
           velX *= 0.9;
           
           // Reducir escala cuando toca el fondo para efecto de "aplastamiento"
-          scale = (isPC ? 0.7 : 0.55) + Math.random() * 0.1;
+          scale = 0.55 + Math.random() * 0.1;
         } else {
           // Restaurar escala gradualmente
-          scale = Math.min(isPC ? 0.8 : 0.65, scale + 0.01);
+          scale = Math.min(0.65, scale + 0.01);
         }
         
         // Rotación basada en la velocidad
@@ -543,42 +387,13 @@
       updateRotation();
     }
 
-    // Rotación automática
-    function toggleAutoRotate() {
-      if (isBouncing) return;
-      
-      isAutoRotating = !isAutoRotating;
-      
-      if (isAutoRotating) {
-        if (isPC) rotateBtn.textContent = 'Detener Rotación';
-        else mobileRotateBtn.textContent = 'Detener Rotación';
-        cube.style.transition = 'transform 0.1s linear';
-        
-        function autoRotate() {
-          if (!isAutoRotating) return;
-          rotateY += 0.5;
-          updateRotation();
-          autoRotateId = requestAnimationFrame(autoRotate);
-        }
-        
-        autoRotateId = requestAnimationFrame(autoRotate);
-      } else {
-        if (isPC) rotateBtn.textContent = 'Rotación Automática';
-        else mobileRotateBtn.textContent = 'Rotar';
-        if (autoRotateId) {
-          cancelAnimationFrame(autoRotateId);
-          autoRotateId = null;
-        }
-      }
-    }
-
-    // Detección de doble tap/clic
+    // Detección de doble tap
     function handleDoubleTap() {
       const now = Date.now();
-      const doubleTapDelay = isPC ? 500 : 300;
+      const doubleTapDelay = 300;
       
       if (now - lastTapTime < doubleTapDelay) {
-        // Doble tap/clic detectado
+        // Doble tap detectado
         if (isBouncing) {
           resetPosition();
         } else {
@@ -591,30 +406,17 @@
 
     // Event listeners para el cubo
     cube.addEventListener('click', handleDoubleTap);
-    
     cube.addEventListener('touchend', (e) => {
       e.preventDefault();
       handleDoubleTap();
     });
-
-    // Botones de control para PC
-    if (isPC) {
-      bounceBtn.addEventListener('click', bounceCube);
-      resetBtn.addEventListener('click', resetPosition);
-      rotateBtn.addEventListener('click', toggleAutoRotate);
-    }
-
-    // Botones de control para móviles
-    mobileBounceBtn.addEventListener('click', bounceCube);
-    mobileResetBtn.addEventListener('click', resetPosition);
-    mobileRotateBtn.addEventListener('click', toggleAutoRotate);
 
     // Reproducir música de fondo automáticamente
     audio.addEventListener('play', iniciarLluvia);
     audio.addEventListener('pause', detenerLluvia);
     audio.addEventListener('ended', iniciarLluvia);
 
-    // Solución para autoplay
+    // Solución para autoplay en iOS
     document.addEventListener('click', function initAudio() {
       // Intenta reproducir la música
       audio.play().catch(e => console.log("Autoplay no permitido hasta interacción del usuario"));
@@ -629,9 +431,6 @@
         scene.style.transform = 'translate(-50%, -50%)';
       }
     });
-
-    // Inicializar
-    updateRotation();
   </script>
 </body>
 </html>
